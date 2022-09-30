@@ -34,6 +34,7 @@ dependencies:
   camera:
   path_provider:
   path:
+  video_player: # only for demo
 
 
   # The following adds the Cupertino Icons font to your application.
