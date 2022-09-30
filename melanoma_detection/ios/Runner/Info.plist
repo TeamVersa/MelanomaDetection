@@ -49,5 +49,7 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>The camera is used to take picture of the pigmentation on the skin to detect potential melanoma.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The microphone is not actually used, since no videos are taken from the camera.</string>
 </dict>
 </plist>
