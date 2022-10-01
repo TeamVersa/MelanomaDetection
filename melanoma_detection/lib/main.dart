@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+//import 'package:path/path.dart';
 
 class SubmitPage extends StatefulWidget {
   final XFile image;
@@ -22,11 +24,55 @@ class SubmitPage extends StatefulWidget {
 }
 
 class _SubmitPageState extends State<SubmitPage> {
+  late Future<Map<String, dynamic>> result;
+
+  Future<Map<String, dynamic>> upload(String url, XFile imageFile) async {
+    var stream = http.ByteStream(imageFile.openRead());
+    stream.cast();
+    var length = await imageFile.length();
+
+    var uri = Uri.parse(url);
+
+    var request = http.MultipartRequest("POST", uri);
+    var multipartFile =
+        http.MultipartFile('image', stream, length, filename: imageFile.path);
+
+    request.files.add(multipartFile);
+    var response = await request.send();
+    print(response.statusCode);
+    var responseData = await response.stream.toBytes();
+    var responseString = String.fromCharCodes(responseData);
+    print(responseString);
+    return jsonDecode(responseString);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    result = upload('http://131.159.193.218:5000/melanoma', widget.image);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Submit Photo')),
-      body: Center(child: Image.file(File(widget.image.path))),
+      appBar: AppBar(title: Text('Result')),
+      body: Column(
+        children: [
+          Center(child: Image.file(File(widget.image.path))),
+          FutureBuilder(
+              future: result,
+              builder: ((context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                      'Melanoma probability: ${snapshot.data!['prediction']}');
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              }))
+        ],
+      ),
     );
   }
 }
