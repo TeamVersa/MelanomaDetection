@@ -12,6 +12,114 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool? isFemale;
+  String? bodyLocation;
+  final bodyLocations = [
+    'unknown',
+    'head/neck',
+    'upper extremity',
+    'lower extremity',
+    'torso',
+    'palms/soles',
+    'oral/genital'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('MelaScan')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Text("DISCALIMER: blablabalbalbala"),
+            Divider(thickness: 3),
+            Expanded(
+                child: Column(
+              children: [
+                ListTile(
+                    title: Text(
+                  'Patient Information:',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
+                Divider(),
+                ListTile(
+                    title: Text('Sex'),
+                    trailing: SizedBox(
+                        width: 200,
+                        child: RadioListTile(
+                          title: Text('Male'),
+                          secondary: Icon(Icons.male),
+                          value: false,
+                          groupValue: isFemale,
+                          onChanged: (value) {
+                            setState(() {
+                              isFemale = value;
+                            });
+                          },
+                        ))),
+                ListTile(
+                  trailing: SizedBox(
+                    width: 200,
+                    child: RadioListTile(
+                      title: Text('Female'),
+                      secondary: Icon(Icons.female),
+                      value: true,
+                      groupValue: isFemale,
+                      onChanged: (value) {
+                        setState(() {
+                          isFemale = value;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                //Divider(),
+                ListTile(
+                    title: Text('Age'),
+                    trailing: SizedBox(
+                      width: 50,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
+                    )),
+                //Divider(),
+                ListTile(
+                    title: Text('Body Part'),
+                    trailing: DropdownButton<String>(
+                        value: bodyLocation,
+                        items: bodyLocations
+                            .map((val) =>
+                                DropdownMenuItem(child: Text(val), value: val))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            bodyLocation = value;
+                          });
+                        })),
+              ],
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class SubmitPage extends StatefulWidget {
   final XFile image;
 
@@ -838,7 +946,7 @@ class CameraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: CameraExampleHome(),
+      home: HomePage(),
     );
   }
 }
