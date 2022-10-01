@@ -8,7 +8,7 @@ def get_tasks():
     i = request.files.get('image', '')
     print(f'received image {i}')
     i.save('image.jpg')
-    time.sleep(2.0)
+    # time.sleep(2.0)
     return jsonify({
         'prediction': 0.69,
         'weather': 'nice'
