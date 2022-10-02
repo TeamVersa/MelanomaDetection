@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,8 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool? isFemale;
-  String? bodyLocation;
+  bool? isFemale = false;
   final bodyLocations = [
     'unknown',
     'head/neck',
@@ -31,99 +31,189 @@ class _HomePageState extends State<HomePage> {
     'palms/soles',
     'oral/genital'
   ];
+  String? bodyLocation = 'unknown';
+  int? age = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('MelaScan')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Text("DISCALIMER: blablabalbalbala"),
-            Divider(thickness: 3),
-            Expanded(
-                child: Column(
+      body: CustomScrollView(slivers: [
+        SliverAppBar(
+          flexibleSpace: FlexibleSpaceBar(
+            background: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ImageIcon(
+                AssetImage('assets/melascan.png'),
+                color: Colors.white,
+              ),
+              // Text(
+              //     '\n\nEarly-stage detection of melanoma is crucial.\nWe provide decision support for doctors to rapidly detect it using AI.\n\n1. Enter patient data below.\n2. Take picture of mole in the center.\n3. If resulting melanoma probability is high, please consider referring the patient to a dermatologist.\n\nThe result only analyses melanoma, other skin cancer types will not be recognized.',
+              //     style:
+              //         TextStyle(fontSize: 25, fontWeight: FontWeight.w300)),
+            ),
+            collapseMode: CollapseMode.pin,
+            titlePadding: EdgeInsets.all(5),
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ListTile(
-                    title: Text(
-                  'Patient Information:',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )),
-                Divider(),
-                ListTile(
-                    title: Text('Sex'),
-                    trailing: SizedBox(
+                ImageIcon(
+                  AssetImage('assets/melascan.png'),
+                  size: 60,
+                  color: Colors.white,
+                ),
+                SizedBox(width: 5),
+                Text('Mela',
+                    style:
+                        TextStyle(fontSize: 40, fontWeight: FontWeight.w300)),
+                Text('Scan',
+                    style:
+                        TextStyle(fontSize: 40, fontWeight: FontWeight.w100)),
+              ],
+            ),
+          ),
+          pinned: true,
+          expandedHeight: MediaQuery.of(context).size.height * 2 / 3,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              SizedBox(
+                  height: MediaQuery.of(context).size.height * 1 / 3,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            "DISCLAIMER: This app should be used only as an assistance tool to help distinguish melanoma. For final diagnosis, please refer to the biopsy results.",
+                            style: TextStyle(color: Colors.grey)),
+                      ),
+                      Spacer(flex: 1),
+                      Text(
+                        'scroll down to start',
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      Icon(
+                        Icons.expand_more,
+                        size: 60,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Spacer(flex: 3),
+                    ],
+                  )),
+              SizedBox(
+                height: MediaQuery.of(context).size.height -
+                    AppBar().preferredSize.height -
+                    MediaQuery.of(context).padding.top,
+                child: Column(
+                  children: [
+                    ListTile(
+                        title: Text(
+                      'Patient Information:',
+                      style: TextStyle(
+                        fontSize: 24,
+                        // fontWeight: FontWeight.bold,
+                      ),
+                    )),
+                    Divider(),
+                    ListTile(
+                        title: Text('Sex:'),
+                        trailing: SizedBox(
+                            width: 200,
+                            child: RadioListTile(
+                              title: Text('Male'),
+                              secondary: Icon(Icons.male),
+                              value: false,
+                              groupValue: isFemale,
+                              activeColor: Theme.of(context).primaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  isFemale = value;
+                                });
+                              },
+                            ))),
+                    ListTile(
+                      trailing: SizedBox(
                         width: 200,
                         child: RadioListTile(
-                          title: Text('Male'),
-                          secondary: Icon(Icons.male),
-                          value: false,
+                          title: Text('Female'),
+                          secondary: Icon(Icons.female),
+                          value: true,
                           groupValue: isFemale,
+                          activeColor: Theme.of(context).primaryColor,
                           onChanged: (value) {
                             setState(() {
                               isFemale = value;
                             });
                           },
-                        ))),
-                ListTile(
-                  trailing: SizedBox(
-                    width: 200,
-                    child: RadioListTile(
-                      title: Text('Female'),
-                      secondary: Icon(Icons.female),
-                      value: true,
-                      groupValue: isFemale,
-                      onChanged: (value) {
-                        setState(() {
-                          isFemale = value;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                //Divider(),
-                ListTile(
-                    title: Text('Age'),
-                    trailing: SizedBox(
-                      width: 50,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        ),
                       ),
-                    )),
-                //Divider(),
-                ListTile(
-                    title: Text('Body Part'),
-                    trailing: DropdownButton<String>(
-                        value: bodyLocation,
-                        items: bodyLocations
-                            .map((val) =>
-                                DropdownMenuItem(child: Text(val), value: val))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            bodyLocation = value;
-                          });
-                        })),
-              ],
-            )),
-          ],
+                    ),
+                    //Divider(),
+                    ListTile(
+                        title: Text('Age:'),
+                        trailing: SizedBox(
+                          width: 50,
+                          child: TextFormField(
+                            initialValue: '0',
+                            onChanged: (a) {
+                              if (a.isNotEmpty) age = int.parse(a);
+                            },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            // cursorColor: Theme.of(context).primaryColor,
+                          ),
+                        )),
+                    //Divider(),
+                    ListTile(
+                        title: Text('Mole on body part:'),
+                        trailing: DropdownButton<String>(
+                            value: bodyLocation,
+                            items: bodyLocations
+                                .map((val) => DropdownMenuItem(
+                                    child: Text(val), value: val))
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                bodyLocation = value;
+                              });
+                            })),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ]),
+      floatingActionButton: ElevatedButton(
+        child: Icon(Icons.camera_enhance, size: 40),
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return CameraExampleHome();
+          }));
+        },
+        style: ElevatedButton.styleFrom(
+          shape: CircleBorder(),
+          padding: EdgeInsets.all(20),
+          backgroundColor: Theme.of(context).primaryColor, // <-- Button color
+          foregroundColor: Colors.white, // <-- Splash color
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
 
 class SubmitPage extends StatefulWidget {
   final XFile image;
+  final String serverAddr;
 
-  const SubmitPage({super.key, required this.image});
+  const SubmitPage({super.key, required this.image, required this.serverAddr});
 
   @override
   State<SubmitPage> createState() => _SubmitPageState();
@@ -132,52 +222,129 @@ class SubmitPage extends StatefulWidget {
 class _SubmitPageState extends State<SubmitPage> {
   late Future<Map<String, dynamic>> result;
 
+  void showInSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    }
+  }
+
   Future<Map<String, dynamic>> upload(String url, XFile imageFile) async {
-    var stream = http.ByteStream(imageFile.openRead());
-    stream.cast();
-    var length = await imageFile.length();
+    try {
+      var stream = http.ByteStream(imageFile.openRead());
+      stream.cast();
+      var length = await imageFile.length();
 
-    var uri = Uri.parse(url);
+      var uri = Uri.parse(url);
 
-    var request = http.MultipartRequest("POST", uri);
-    var multipartFile =
-        http.MultipartFile('image', stream, length, filename: imageFile.path);
+      var request = http.MultipartRequest("POST", uri);
+      var multipartFile =
+          http.MultipartFile('image', stream, length, filename: imageFile.path);
 
-    request.files.add(multipartFile);
-    var response = await request.send();
-    print(response.statusCode);
-    var responseData = await response.stream.toBytes();
-    var responseString = String.fromCharCodes(responseData);
-    print(responseString);
-    return jsonDecode(responseString);
+      request.files.add(multipartFile);
+      var response = await request.send();
+      print(response.statusCode);
+      var responseData = await response.stream.toBytes();
+      var responseString = String.fromCharCodes(responseData);
+      print(responseString);
+
+      return jsonDecode(responseString);
+    } on Exception catch (e) {
+      showInSnackBar('$e');
+      return {};
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    result = upload('http://131.159.193.218:5000/melanoma', widget.image);
+    result = upload('http://${widget.serverAddr}/melanoma', widget.image);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Result')),
-      body: Column(
-        children: [
-          Center(child: Image.file(File(widget.image.path))),
-          FutureBuilder(
-              future: result,
-              builder: ((context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                      'Melanoma probability: ${snapshot.data!['prediction']}');
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              }))
-        ],
+      appBar: AppBar(
+        title: const Text('Scan Analysis Result'),
+        titleTextStyle: TextStyle(
+          fontSize: 32,
+          color: Colors.white,
+        ),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.width,
+              child: Image.file(
+                File(widget.image.path),
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+            Spacer(),
+            FutureBuilder(
+                future: result,
+                builder: ((context, snapshot) {
+                  if (snapshot.hasData) {
+                    var result = snapshot.data!;
+                    return Column(
+                      children: [
+                        // ListTile(
+                        //     title: Text('Prediction:'),
+                        //     trailing: Text('${result['prediction']}')),
+                        ListTile(
+                            title: Text('Probability of Melanoma:'),
+                            trailing: Text(
+                                '${(result['confidence'] * 10000).round() / 100}%')),
+                        ListTile(
+                            title: SfLinearGauge(
+                          ranges: [
+                            LinearGaugeRange(
+                                startValue: 0,
+                                endValue: 1 / 3 * 100,
+                                color: Colors.green),
+                            LinearGaugeRange(
+                                startValue: 1 / 3 * 100,
+                                endValue: 2 / 3 * 100,
+                                color: Colors.orange),
+                            LinearGaugeRange(
+                                startValue: 2 / 3 * 100,
+                                endValue: 100,
+                                color: Colors.red)
+                          ],
+                          markerPointers: [
+                            LinearShapePointer(
+                              value: result['confidence'] * 100,
+                            ),
+                          ],
+                        ))
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  } else {
+                    return Column(
+                      children: [
+                        Text(
+                          'Analysing...',
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Theme.of(context).primaryColor),
+                        ),
+                        SizedBox(height: 20),
+                        CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor),
+                      ],
+                    );
+                  }
+                })),
+            Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -218,6 +385,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   double _currentScale = 1.0;
   double _baseScale = 1.0;
 
+  String serverAddr = '10.183.53.222:5000';
+
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
 
@@ -252,6 +421,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void dispose() {
+    setFlashMode(FlashMode.off);
     _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
@@ -281,12 +451,36 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text('Scan the Mole.'),
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
             fontSize: 32,
+            color: Colors.white,
             shadows: <Shadow>[Shadow(color: Colors.black45, blurRadius: 15.0)]),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return Scaffold(
+                      appBar: AppBar(title: Text('Settings')),
+                      body: Column(
+                        children: [
+                          Text('Server Address: $serverAddr'),
+                          TextField(
+                            onSubmitted: (value) {
+                              serverAddr = value;
+                            },
+                          ),
+                        ],
+                      ));
+                }));
+              },
+              icon: Icon(Icons.settings, color: Colors.white, shadows: <Shadow>[
+                Shadow(color: Colors.black45, blurRadius: 15.0)
+              ]))
+        ],
       ),
       body: Stack(
         children: [
@@ -294,7 +488,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           Column(
             children: <Widget>[
               SizedBox(
-                  height: MediaQuery.of(context).padding.top + kToolbarHeight),
+                height: MediaQuery.of(context).padding.top + kToolbarHeight,
+              ),
               _modeControlRowWidget(),
               Expanded(
                 child: Container(
@@ -377,35 +572,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     await controller!.setZoomLevel(_currentScale);
   }
 
-  /// Display the thumbnail of the captured image
-  // Widget _thumbnailWidget() {
-  //   return Expanded(
-  //     child: Align(
-  //       alignment: Alignment.centerRight,
-  //       child: Row(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: <Widget>[
-  //           if (imageFile == null)
-  //             Container()
-  //           else
-  //             SizedBox(
-  //               width: 64.0,
-  //               height: 64.0,
-  //               child:
-  //                   // The captured image on the web contains a network-accessible URL
-  //                   // pointing to a location within the browser. It may be displayed
-  //                   // either with Image.network or Image.memory after loading the image
-  //                   // bytes to memory.
-  //                   kIsWeb
-  //                       ? Image.network(imageFile!.path)
-  //                       : Image.file(File(imageFile!.path)),
-  //             )
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   /// Display a bar with buttons to change the flash and exposure modes
   Widget _modeControlRowWidget() {
     return Column(
@@ -418,7 +584,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 Shadow(color: Colors.black45, blurRadius: 15.0)
               ]),
               color: controller?.value.flashMode == FlashMode.torch
-                  ? Colors.orange
+                  ? Theme.of(context).primaryColor
                   : Colors.white,
               onPressed: controller != null
                   ? () => onSetFlashModeButtonPressed(
@@ -471,14 +637,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
       // ignore: deprecated_member_use
       primary: controller?.value.exposureMode == ExposureMode.auto
-          ? Colors.orange
+          ? Theme.of(context).primaryColor
           : Colors.white,
     );
     final ButtonStyle styleLocked = TextButton.styleFrom(
       // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
       // ignore: deprecated_member_use
       primary: controller?.value.exposureMode == ExposureMode.locked
-          ? Colors.orange
+          ? Theme.of(context).primaryColor
           : Colors.white,
     );
 
@@ -562,14 +728,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
       // ignore: deprecated_member_use
       primary: controller?.value.focusMode == FocusMode.auto
-          ? Colors.orange
+          ? Theme.of(context).primaryColor
           : Colors.white,
     );
     final ButtonStyle styleLocked = TextButton.styleFrom(
       // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
       // ignore: deprecated_member_use
       primary: controller?.value.focusMode == FocusMode.locked
-          ? Colors.orange
+          ? Theme.of(context).primaryColor
           : Colors.white,
     );
 
@@ -643,45 +809,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(_cameras[(index + 1) % _cameras.length]);
     }
   }
-
-  // /// Display a row of toggle to select the camera (or a message if no camera is available).
-  // Widget _cameraTogglesRowWidget() {
-  //   final List<Widget> toggles = <Widget>[];
-
-  //   void onChanged(CameraDescription? description) {
-  //     if (description == null) {
-  //       return;
-  //     }
-
-  //     onNewCameraSelected(description);
-  //   }
-
-  //   if (_cameras.isEmpty) {
-  //     _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
-  //       showInSnackBar('No camera found.');
-  //     });
-  //     return const Text('None');
-  //   } else {
-  //     for (final CameraDescription cameraDescription in _cameras) {
-  //       toggles.add(
-  //         SizedBox(
-  //           width: 90.0,
-  //           child: RadioListTile<CameraDescription>(
-  //             title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-  //             groupValue: controller?.description,
-  //             value: cameraDescription,
-  //             onChanged:
-  //                 controller != null && controller!.value.isRecordingVideo
-  //                     ? null
-  //                     : onChanged,
-  //           ),
-  //         ),
-  //       );
-  //     }
-  //   }
-
-  //   return Row(children: toggles);
-  // }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -790,7 +917,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         if (file != null) {
           //showInSnackBar('Picture saved to ${file.path}');
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return SubmitPage(image: imageFile!);
+            return SubmitPage(
+              image: imageFile!,
+              serverAddr: serverAddr,
+            );
           }));
         }
       }
@@ -945,7 +1075,11 @@ class CameraApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      title: 'MelaScan',
+      theme: ThemeData(
+        primaryColor: Color.fromARGB(255, 104, 75, 255),
+      ),
       home: HomePage(),
     );
   }
@@ -958,6 +1092,10 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // transparent status bar
   ));
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   // Fetch the available cameras before initializing the app.
   try {
