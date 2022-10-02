@@ -1,0 +1,1 @@
+this folder should contain the pretrained model weights file from https://www.kaggle.com/datasets/boliu0/melanoma-winning-models and unzipped. Only 1 of the model is actually loaded (see server.py to check which), so you don't need all 12GB
