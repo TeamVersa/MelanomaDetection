@@ -82,12 +82,6 @@ class _HomePageState extends State<HomePage> {
                   height: MediaQuery.of(context).size.height * 1 / 3,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            "DISCLAIMER: This app should be used only as an assistance tool to help distinguish melanoma. For final diagnosis, please refer to the biopsy results.",
-                            style: TextStyle(color: Colors.grey)),
-                      ),
                       Spacer(flex: 1),
                       Text(
                         'scroll down to start',
@@ -265,7 +259,7 @@ class _SubmitPageState extends State<SubmitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Analysis Result'),
+        title: const Text('Scan Analysis'),
         titleTextStyle: TextStyle(
           fontSize: 32,
           color: Colors.white,
@@ -293,9 +287,6 @@ class _SubmitPageState extends State<SubmitPage> {
                     var result = snapshot.data!;
                     return Column(
                       children: [
-                        // ListTile(
-                        //     title: Text('Prediction:'),
-                        //     trailing: Text('${result['prediction']}')),
                         ListTile(
                             title: Text('Probability of Melanoma:'),
                             trailing: Text(
@@ -321,7 +312,14 @@ class _SubmitPageState extends State<SubmitPage> {
                               value: result['confidence'] * 100,
                             ),
                           ],
-                        ))
+                        )),
+                        SizedBox(height: 40),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              "DISCLAIMER: This app should be used only as an assistance tool to help distinguish melanoma. For final diagnosis, please refer to the biopsy results.",
+                              style: TextStyle(color: Colors.grey)),
+                        ),
                       ],
                     );
                   } else if (snapshot.hasError) {
