@@ -1,29 +1,26 @@
 from flask import Flask, jsonify, request
-import time
 
 import os
 import cv2
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
-from torch.utils.data import TensorDataset, DataLoader, Dataset
+from torch.utils.data import Dataset
 import albumentations as A
 import geffnet
-import csv
-from PIL import Image
 
-device = torch.device('cpu')
+device = torch.device('cuda') # use 'cpu' if you don't have a GPU
 
-# parameters
+# the model will inference the image num_folds * num_transforms times. This can significantly increase inference times
+num_folds, num_transforms = 5, 8 #2, 1 is much faster (but less accurate) if the analysis is too slow
+
+
+# const parameters
 model_dir = 'model'
 kernel_type = '9c_b7ns_1e_640_ext_15ep'
 enet_type = 'efficientnet-b7'
 out_dim = 9
 image_size = 640
-
-# the model will inference the image num_folds * num_transforms times. This can significantly increase inference times
-num_folds, num_transforms = 2, 1 #5, 8
 
 
 # dataset
