@@ -1,6 +1,6 @@
 # MelaScan — Melanoma detection in a snap!
 
-Melanoma, the deadliest type of skin cancer, is actually easily treatable if detected at an early stage. However, due to how easy it is to overlook on the skin and how difficult it is to recognize by non-specialized doctors, it often goes undetected until it's too late. Our goal is to build a decision support app to help doctors in the **diagnosis of melanoma in a very easy to use and rapid fashion**, <20 seconds from app launch to analysis result.
+Melanoma, the deadliest type of skin cancer, is actually easily treatable if detected at an early stage. However, due to how easy it is to overlook on the skin and how difficult it is to recognize by non-specialized doctors, it often goes undetected until it's too late. So we built a decision support app to help doctors in the **diagnosis of melanoma in a very easy to use and rapid fashion**, <20 seconds from app launch to analysis result.
 
 <a href="https://youtu.be/0DBCGSW64r4"><img width="50%" src="https://joongwonseo.github.io/projects/melascan/home_cropped.gif" alt="Demo Video" /></a> <br/>*(Click the image to see a short demo on YouTube)*
 
